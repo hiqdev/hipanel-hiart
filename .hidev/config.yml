@@ -1,0 +1,6 @@
+package:
+    type:           yii2-extension
+    name:           hipanel-hiart
+    title:          HiPanel Hiart
+    headline:       HiPanel API client made with HiART
+    keywords:       hipanel, api client, hiart
