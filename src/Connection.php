@@ -7,6 +7,15 @@ use Yii;
 class Connection extends \hiqdev\hiart\Connection implements ApiConnectionInterface
 {
     /**
+     * Creates new query builder instance.
+     * @return QueryBuilder
+     */
+    public function createQueryBuilder()
+    {
+        return new QueryBuilder($this);
+    }
+
+    /**
      * @param mixed $response The response
      * @return null|string
      *  - string: the error text

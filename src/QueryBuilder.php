@@ -8,54 +8,79 @@
  * @copyright Copyright (c) 2015-2016, HiQDev (http://hiqdev.com/)
  */
 
-namespace hiqdev\hiart;
+namespace hipanel\hiart;
 
+use hiqdev\hiart\Query;
 use yii\base\InvalidParamException;
 use yii\base\NotSupportedException;
 use yii\helpers\ArrayHelper;
+use yii\helpers\Inflector;
 
 /**
- * QueryBuilder builds an HiArt query based on the specification given as a [[Query]] object.
+ * QueryBuilder for HiPanel API.
  */
-class QueryBuilder extends \yii\base\Object
+class QueryBuilder extends \hiqdev\hiart\QueryBuilder
 {
-    private $_sort = [
-        SORT_ASC  => '_asc',
-        SORT_DESC => '_desc',
-    ];
-
-    public $db;
-
-    public function __construct($connection, $config = [])
+    public function buildMethod(Query $query)
     {
-        $this->db = $connection;
-        parent::__construct($config);
+        return 'POST';
+    }
+
+    public function buildUri(Query $query)
+    {
+        $from = is_array($query->from) ? reset($query->from) : $query->from;
+
+        return lcfirst($from . ($query->getOption('batch') ? 's' : '') . $this->buildCommand($query));
+    }
+
+    public function buildCommand(Query $query)
+    {
+        $action = $query->action;
+        if ($action === 'search' && empty($query->getOption('batch'))) {
+            $action = 'get-info';
+        }
+
+        return Inflector::id2camel($action);
+    }
+
+    public function buildFormParams(Query $query)
+    {
+        return $query->params;
+    }
+
+    public function buildAuth(Query $query)
+    {
+        $query->addParams($this->db->getAuth());
     }
 
     /**
-     * @param ActiveQuery $query
-     *
+     * @param Query $query
      * @throws NotSupportedException
-     *
-     * @return array
+     * @return Query
      */
-    public function build($query)
+    public function prepare(Query $query)
     {
         $parts = [];
-        $query->prepare();
+        $query->prepare($this);
 
         $this->buildSelect($query->select, $parts);
+        $this->buildCount($query->count, $parts);
         $this->buildLimit($query->limit, $parts);
         $this->buildPage($query->offset, $query->limit, $parts);
         $this->buildOrderBy($query->orderBy, $parts);
 
-        $parts = ArrayHelper::merge($parts, $this->buildCondition($query->where));
+        $parts = ArrayHelper::merge($parts, $this->buildCondition($query->where), $query->body);
 
-        return [
-            'queryParts' => $parts,
-            'index'      => $query->index,
-            'type'       => $query->type,
-        ];
+        $query->addParams($parts);
+
+        return $query;
+    }
+
+    public function buildCount($count, &$parts)
+    {
+        if (!empty($count)) {
+            $parts['count'] = 1;
+        }
     }
 
     public function buildLimit($limit, &$parts)
@@ -75,6 +100,11 @@ class QueryBuilder extends \yii\base\Object
         }
     }
 
+    private $_sort = [
+        SORT_ASC  => '_asc',
+        SORT_DESC => '_desc',
+    ];
+
     public function buildOrderBy($orderBy, &$parts)
     {
         if (!empty($orderBy)) {
@@ -89,152 +119,5 @@ class QueryBuilder extends \yii\base\Object
                 $parts['select'][$attribute] = $attribute;
             }
         }
-    }
-
-    public function buildCondition($condition)
-    {
-        static $builders = [
-            'and'     => 'buildAndCondition',
-            'between' => 'buildBetweenCondition',
-            'eq'      => 'buildEqCondition',
-            'ne'      => 'buildNotEqCondition',
-            'in'      => 'buildInCondition',
-            'ni'      => 'buildNotInCondition',
-            'like'    => 'buildLikeCondition',
-            'ilike'   => 'buildIlikeCondition',
-            'gt'      => 'buildCompareCondition',
-            'ge'      => 'buildCompareCondition',
-            'lt'      => 'buildCompareCondition',
-            'le'      => 'buildCompareCondition',
-        ];
-        if (empty($condition)) {
-            return [];
-        }
-        if (!is_array($condition)) {
-            throw new NotSupportedException('String conditions in where() are not supported by HiArt.');
-        }
-
-        if (isset($condition[0])) { // operator format: operator, operand 1, operand 2, ...
-            $operator = strtolower($condition[0]);
-            if (isset($builders[$operator])) {
-                $method = $builders[$operator];
-                array_shift($condition); // Shift build condition
-
-                return $this->$method($operator, $condition);
-            } else {
-                throw new InvalidParamException('Found unknown operator in query: ' . $operator);
-            }
-        } else {
-            return $this->buildHashCondition($condition);
-        }
-    }
-
-    private function buildHashCondition($condition)
-    {
-        $parts = [];
-        foreach ($condition as $attribute => $value) {
-            if (is_array($value)) { // IN condition
-                // $parts[] = [$attribute.'s' => join(',',$value)];
-                $parts[$attribute . 's'] = implode(',', $value);
-            } else {
-                $parts[$attribute] = $value;
-            }
-        }
-
-        return $parts;
-    }
-
-    private function buildLikeCondition($operator, $operands)
-    {
-        return [$operands[0] . '_like' => $operands[1]];
-    }
-
-    private function buildIlikeCondition($operator, $operands)
-    {
-        return [$operands[0] . '_ilike' => $operands[1]];
-    }
-
-    private function buildCompareCondition($operator, $operands)
-    {
-        if (!isset($operands[0], $operands[1])) {
-            throw new InvalidParamException("Operator '$operator' requires three operands.");
-        }
-
-        return [$operands[0] . '_' . $operator => $operands[1]];
-    }
-
-    private function buildAndCondition($operator, $operands)
-    {
-        $parts = [];
-        foreach ($operands as $operand) {
-            if (is_array($operand)) {
-                $parts = \yii\helpers\ArrayHelper::merge($this->buildCondition($operand), $parts);
-            }
-        }
-        if (!empty($parts)) {
-            return $parts;
-        } else {
-            return [];
-        }
-    }
-
-    private function buildBetweenCondition($operator, $operands)
-    {
-        throw new NotSupportedException('Between condition is not supported by HiArt.');
-    }
-
-    private function buildInCondition($operator, $operands, $not = false)
-    {
-        if (!isset($operands[0], $operands[1])) {
-            throw new InvalidParamException("Operator '$operator' requires two operands.");
-        }
-
-        list($column, $values) = $operands;
-
-        if (count($column) > 1) {
-            return $this->buildCompositeInCondition($operator, $column, $values);
-        } elseif (is_array($column)) {
-            $column = reset($column);
-        }
-
-        foreach ((array) $values as $i => $value) {
-            if (is_array($value)) {
-                $values[$i] = $value = isset($value[$column]) ? $value[$column] : null;
-            }
-            if ($value === null) {
-                unset($values[$i]);
-            }
-        }
-
-        if ($not) {
-            $key = $column . '_ni'; // not in
-        } else {
-            $key = $column . '_in';
-        }
-        return [$key => $values];
-    }
-
-    private function buildNotInCondition($operator, $operands)
-    {
-        return $this->buildInCondition($operator, $operands, true);
-    }
-
-    private function buildEqCondition($operator, $operands)
-    {
-        $key = array_shift($operands);
-
-        return [$key => reset($operands)];
-    }
-
-    private function buildNotEqCondition($operator, $operands)
-    {
-        $key = array_shift($operands);
-
-        return [$key . '_' . $operator => reset($operands)];
-    }
-
-    protected function buildCompositeInCondition($operator, $columns, $values)
-    {
-        throw new NotSupportedException('composite in is not supported by HiArt.');
     }
 }

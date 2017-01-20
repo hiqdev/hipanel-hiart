@@ -9,7 +9,7 @@ return [
     ],
     'container' => [
         'singletons' => [
-            \hipanel\hiart\ApiConnectionInterface::class => function () {
+            \hipanel\hiart\ConnectionInterface::class => function () {
                 return Yii::$app->get('hiart');
             },
         ],
