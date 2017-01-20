@@ -4,16 +4,9 @@ namespace hipanel\hiart;
 
 use Yii;
 
-class Connection extends \hiqdev\hiart\Connection implements ApiConnectionInterface
+class Connection extends \hiqdev\hiart\Connection implements ConnectionInterface
 {
-    /**
-     * Creates new query builder instance.
-     * @return QueryBuilder
-     */
-    public function createQueryBuilder()
-    {
-        return new QueryBuilder($this);
-    }
+    public $queryBuilderClass = QueryBuilder::class;
 
     /**
      * @param mixed $response The response
