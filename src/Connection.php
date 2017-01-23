@@ -2,43 +2,60 @@
 
 namespace hipanel\hiart;
 
+use hiqdev\hiart\Response;
+use yii\base\Application;
 use Yii;
 
 class Connection extends \hiqdev\hiart\Connection implements ConnectionInterface
 {
     public $queryBuilderClass = QueryBuilder::class;
 
-    /**
-     * @param mixed $response The response
-     * @return null|string
-     *  - string: the error text
-     *  - null: the response is not an error
-     */
-    public function checkError($response)
-    {
-        if ($response !== '0' && $this->isError($response)) {
-            $error = $this->getError($response);
-            if (empty($error)) {
-                return 'unknown api error';
-            } elseif ($error === 'invalid_token') {
-                Yii::$app->user->logout();
-                Yii::$app->response->refresh()->send();
-                Yii::$app->end();
-            } else {
-                return $error;
-            }
-        }
+    private $app;
 
-        return null;
+    public function __construct(Application $app, $config = [])
+    {
+        $this->app = $app;
+        parent::__construct($config);
     }
 
-    private function isError($data)
+    /**
+     * @param Response $response
+     * @return string|false error text or false
+     */
+    public function checkError(Response $response)
     {
+        if (!$this->isError($response)) {
+            return false;
+        }
+
+        $error = $this->getError($response);
+        if ($error === 'invalid_token') {
+            $this->app->user->logout();
+            $this->app->response->refresh()->send();
+            $this->app->end();
+        }
+
+        return $error ?: 'unknown api error';
+    }
+
+    /**
+     * @param Response $response
+     * @return bool
+     */
+    public function isError(Response $response)
+    {
+        $data = $response->getData();
+        if ($data === '0') {
+            return false;
+        }
+
         return is_array($data) ? array_key_exists('_error', $data) : !$data;
     }
 
-    private function getError($data)
+    private function getError(Response $response)
     {
+        $data = $response->getData();
+
         return isset($data['_error']) ? $data['_error'] : null;
     }
 
