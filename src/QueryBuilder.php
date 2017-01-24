@@ -19,7 +19,7 @@ use yii\helpers\Inflector;
 /**
  * QueryBuilder for HiPanel API.
  */
-class QueryBuilder extends \hiqdev\hiart\QueryBuilder
+class QueryBuilder extends \hiqdev\hiart\rest\QueryBuilder
 {
     public function buildMethod(Query $query)
     {

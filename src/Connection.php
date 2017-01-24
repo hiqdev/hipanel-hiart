@@ -2,11 +2,11 @@
 
 namespace hipanel\hiart;
 
-use hiqdev\hiart\Response;
+use hiqdev\hiart\ResponseInterface;
 use yii\base\Application;
 use Yii;
 
-class Connection extends \hiqdev\hiart\Connection implements ConnectionInterface
+class Connection extends \hiqdev\hiart\rest\Connection implements ConnectionInterface
 {
     public $queryBuilderClass = QueryBuilder::class;
 
@@ -19,10 +19,10 @@ class Connection extends \hiqdev\hiart\Connection implements ConnectionInterface
     }
 
     /**
-     * @param Response $response
+     * @param ResponseInterface $response
      * @return string|false error text or false
      */
-    public function checkError(Response $response)
+    public function checkError(ResponseInterface $response)
     {
         if (!$this->isError($response)) {
             return false;
@@ -39,10 +39,10 @@ class Connection extends \hiqdev\hiart\Connection implements ConnectionInterface
     }
 
     /**
-     * @param Response $response
+     * @param ResponseInterface $response
      * @return bool
      */
-    public function isError(Response $response)
+    public function isError(ResponseInterface $response)
     {
         $data = $response->getData();
         if ($data === '0') {
@@ -52,7 +52,7 @@ class Connection extends \hiqdev\hiart\Connection implements ConnectionInterface
         return is_array($data) ? array_key_exists('_error', $data) : !$data;
     }
 
-    private function getError(Response $response)
+    private function getError(ResponseInterface $response)
     {
         $data = $response->getData();
 
