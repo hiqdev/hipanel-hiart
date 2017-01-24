@@ -43,7 +43,7 @@
         }
     ],
     "require": {
-        "hiqdev/yii2-hiart": "<2.0 || dev-redo"
+        "hiqdev/yii2-hiart": "<2.0 || dev-master"
     },
     "require-dev": {
         "hiqdev/hidev-php": "<2.0",
