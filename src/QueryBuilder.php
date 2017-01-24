@@ -1,17 +1,16 @@
 <?php
 /**
- * Tools to use API as ActiveRecord for Yii2
+ * HiPanel Hiart
  *
- * @link      https://github.com/hiqdev/yii2-hiart
- * @package   yii2-hiart
+ * @link      https://github.com/hiqdev/hipanel-hiart
+ * @package   hipanel-hiart
  * @license   BSD-3-Clause
- * @copyright Copyright (c) 2015-2016, HiQDev (http://hiqdev.com/)
+ * @copyright Copyright (c) 2017, HiQDev (http://hiqdev.com/)
  */
 
 namespace hipanel\hiart;
 
 use hiqdev\hiart\Query;
-use yii\base\InvalidParamException;
 use yii\base\NotSupportedException;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Inflector;

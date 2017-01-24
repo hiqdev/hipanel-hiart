@@ -1,10 +1,18 @@
 <?php
+/**
+ * HiPanel Hiart
+ *
+ * @link      https://github.com/hiqdev/hipanel-hiart
+ * @package   hipanel-hiart
+ * @license   BSD-3-Clause
+ * @copyright Copyright (c) 2017, HiQDev (http://hiqdev.com/)
+ */
 
 namespace hipanel\hiart;
 
 use hiqdev\hiart\ResponseInterface;
-use yii\base\Application;
 use Yii;
+use yii\base\Application;
 
 class Connection extends \hiqdev\hiart\rest\Connection implements ConnectionInterface
 {
