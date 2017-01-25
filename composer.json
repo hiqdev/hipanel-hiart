@@ -43,7 +43,7 @@
         }
     ],
     "require": {
-        "hiqdev/yii2-hiart": "<2.0 || dev-master"
+        "hiqdev/yii2-hiart-guzzle": "<2.0 || *@dev"
     },
     "require-dev": {
         "hiqdev/hidev-php": "<2.0",
@@ -57,7 +57,8 @@
     "extra": {
         "config-plugin": {
             "params": "src/config/params.php",
-            "hisite": "src/config/hisite.php"
+            "hisite": "src/config/common.php",
+            "hidev": "src/config/common.php"
         }
     },
     "minimum-stability": "dev",
