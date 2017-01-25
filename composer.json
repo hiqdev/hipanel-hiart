@@ -46,6 +46,7 @@
         "hiqdev/yii2-hiart-guzzle": "<2.0 || *@dev"
     },
     "require-dev": {
+        "phpunit/phpunit": "^5.7",
         "hiqdev/hidev-php": "<2.0",
         "hiqdev/hidev-hiqdev": "<2.0"
     },
@@ -61,7 +62,6 @@
             "hidev": "src/config/common.php"
         }
     },
-    "minimum-stability": "dev",
     "repositories": [
         {
             "type": "composer",
