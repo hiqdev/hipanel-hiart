@@ -18,9 +18,7 @@ class Connection extends \hiqdev\hiart\rest\Connection implements ConnectionInte
 {
     public $queryBuilderClass = QueryBuilder::class;
 
-    public $queryClass = Query::class;
-
-    public $activeQueryClass = ActiveQuery::class;
+    public $commandClass = Command::class;
 
     private $app;
 
