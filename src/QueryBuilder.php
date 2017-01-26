@@ -35,11 +35,12 @@ class QueryBuilder extends \hiqdev\hiart\rest\QueryBuilder
     public function buildCommand(Query $query)
     {
         $action = $query->action;
+        $prefix = '';
         if ($action === 'search' && empty($query->getOption('batch'))) {
-            $action = 'get-info';
+            $prefix = 's';
         }
 
-        return Inflector::id2camel($action);
+        return $prefix . Inflector::id2camel($action);
     }
 
     public function buildFormParams(Query $query)

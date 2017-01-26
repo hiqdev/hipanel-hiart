@@ -18,6 +18,10 @@ class Connection extends \hiqdev\hiart\rest\Connection implements ConnectionInte
 {
     public $queryBuilderClass = QueryBuilder::class;
 
+    public $queryClass = Query::class;
+
+    public $activeQueryClass = ActiveQuery::class;
+
     private $app;
 
     public function __construct(Application $app, $config = [])
@@ -30,7 +34,7 @@ class Connection extends \hiqdev\hiart\rest\Connection implements ConnectionInte
      * @param ResponseInterface $response
      * @return string|false error text or false
      */
-    public function checkError(ResponseInterface $response)
+    public function getResponseError(ResponseInterface $response)
     {
         if (!$this->isError($response)) {
             return false;
