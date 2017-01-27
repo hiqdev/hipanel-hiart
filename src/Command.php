@@ -18,8 +18,11 @@ class Command extends \hiqdev\hiart\Command
     public function search($options = [])
     {
         $rows = parent::search($options);
-        $isBatch = $this->request->getQuery()->getOption('batch');
 
-        return $isBatch ? $rows : reset($rows);
+        if ($this->request->getQuery()->getOption('batch')) {
+            return $rows;
+        }
+
+        return $rows === [] ? null : reset($rows);
     }
 }
