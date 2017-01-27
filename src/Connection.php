@@ -89,8 +89,12 @@ class Connection extends \hiqdev\hiart\rest\Connection implements ConnectionInte
         }
 
         $token = $identity->getAccessToken();
-        if (!$token && $user->loginRequired() !== null) {
-            Yii::$app->response->redirect('/site/logout');
+        if (empty($token)) {
+            /// this is very important line
+            /// without this line - redirect loop
+            Yii::$app->user->logout();
+
+            Yii::$app->response->redirect('/site/login');
             Yii::$app->end();
         }
 
