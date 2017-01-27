@@ -54,6 +54,10 @@ class Connection extends \hiqdev\hiart\rest\Connection implements ConnectionInte
      */
     public function isError(ResponseInterface $response)
     {
+        if ($this->isRawDataEmpty($response)) {
+            return true;
+        }
+
         $data = $response->getData();
         if ($data === '0') {
             return false;
@@ -62,11 +66,23 @@ class Connection extends \hiqdev\hiart\rest\Connection implements ConnectionInte
         return is_array($data) ? array_key_exists('_error', $data) : !$data;
     }
 
+    private function isRawDataEmpty(ResponseInterface $response)
+    {
+        return $response->getRawData() === null || $response->getRawData() === '';
+    }
+
     private function getError(ResponseInterface $response)
     {
-        $data = $response->getData();
+        if ($this->isRawDataEmpty($response)) {
+            return 'The response body is empty';
+        }
 
-        return isset($data['_error']) ? $data['_error'] : null;
+        $data = $response->getData();
+        if (isset($data['_error'])) {
+            return $data['_error'];
+        }
+
+        return null;
     }
 
     /**
