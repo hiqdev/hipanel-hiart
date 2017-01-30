@@ -10,12 +10,6 @@
 
 namespace hipanel\hiart;
 
-interface ConnectionInterface
+interface ConnectionInterface extends \hiqdev\hiart\ConnectionInterface
 {
-    /**
-     * Creates API command.
-     * @param array $config
-     * @return mixed response
-     */
-    public function createCommand(array $config = []);
 }
