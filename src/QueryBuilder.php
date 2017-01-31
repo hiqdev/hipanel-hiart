@@ -27,7 +27,11 @@ class QueryBuilder extends \hiqdev\hiart\rest\QueryBuilder
 
     public function buildUri(Query $query)
     {
-        $from = is_array($query->from) ? reset($query->from) : $query->from;
+        if (is_array($query->action)) {
+            $from = reset($query->action);
+        } else {
+            $from = is_array($query->from) ? reset($query->from) : $query->from;
+        }
 
         return lcfirst($from . ($query->getOption('batch') ? 's' : '') . $this->buildCommand($query));
     }
@@ -35,6 +39,10 @@ class QueryBuilder extends \hiqdev\hiart\rest\QueryBuilder
     public function buildCommand(Query $query)
     {
         $action = $query->action;
+        if (is_array($action)) {
+            $action = end($action);
+        }
+
         $prefix = '';
         if ($action === 'search' && empty($query->getOption('batch'))) {
             $prefix = 's';
