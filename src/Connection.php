@@ -86,8 +86,7 @@ class Connection extends \hiqdev\hiart\rest\Connection implements ConnectionInte
     }
 
     /**
-     * Prepares authorization data.
-     * If user is not authorized redirects to authorization.
+     * Gets auth data from user.
      * @return array
      */
     public function getAuth()
@@ -96,24 +95,6 @@ class Connection extends \hiqdev\hiart\rest\Connection implements ConnectionInte
             return [];
         }
 
-        $user  = Yii::$app->user;
-
-        $identity = $user->identity;
-        if ($identity === null) {
-            Yii::$app->response->redirect('/site/login');
-            Yii::$app->end();
-        }
-
-        $token = $identity->getAccessToken();
-        if (empty($token)) {
-            /// this is very important line
-            /// without this line - redirect loop
-            Yii::$app->user->logout();
-
-            Yii::$app->response->redirect('/site/login');
-            Yii::$app->end();
-        }
-
-        return ['access_token' => $token];
+        return $this->app->user->getAuthData();
     }
 }
