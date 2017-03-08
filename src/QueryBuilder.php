@@ -48,6 +48,10 @@ class QueryBuilder extends \hiqdev\hiart\rest\QueryBuilder
             $prefix = 's';
         }
 
+        if ($action === 'insert') {
+            $action = 'create';
+        }
+
         return $prefix . Inflector::id2camel($action);
     }
 
