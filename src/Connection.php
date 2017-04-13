@@ -1,6 +1,6 @@
 <?php
 /**
- * HiPanel Hiart
+ * HiPanel API client made with HiART
  *
  * @link      https://github.com/hiqdev/hipanel-hiart
  * @package   hipanel-hiart
@@ -11,7 +11,6 @@
 namespace hipanel\hiart;
 
 use hiqdev\hiart\ResponseInterface;
-use Yii;
 use yii\base\Application;
 
 class Connection extends \hiqdev\hiart\rest\Connection implements ConnectionInterface

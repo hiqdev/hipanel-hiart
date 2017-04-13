@@ -1,7 +1,6 @@
-HiPanel API client made with HiART
-==================================
+# HiPanel Hiart
 
-**HiPanel Hiart**
+**HiPanel API client made with HiART**
 
 [![Latest Stable Version](https://poser.pugx.org/hiqdev/hipanel-hiart/v/stable)](https://packagist.org/packages/hiqdev/hipanel-hiart)
 [![Total Downloads](https://poser.pugx.org/hiqdev/hipanel-hiart/downloads)](https://packagist.org/packages/hiqdev/hipanel-hiart)

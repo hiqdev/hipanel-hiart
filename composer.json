@@ -1,7 +1,7 @@
 {
     "name": "hiqdev/hipanel-hiart",
     "type": "yii2-extension",
-    "description": "HiPanel Hiart",
+    "description": "HiPanel API client made with HiART",
     "keywords": [
         "hipanel",
         "api client",
