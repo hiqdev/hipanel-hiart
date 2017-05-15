@@ -1,6 +1,6 @@
 <?php
 /**
- * HiPanel API client made with HiART
+ * HiPanel API client made with HiART.
  *
  * @link      https://github.com/hiqdev/hipanel-hiart
  * @package   hipanel-hiart
