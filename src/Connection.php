@@ -17,8 +17,6 @@ class Connection extends \hiqdev\hiart\rest\Connection implements ConnectionInte
 {
     public $queryBuilderClass = QueryBuilder::class;
 
-    public $commandClass = Command::class;
-
     private $app;
 
     public function __construct(Application $app, $config = [])
@@ -28,11 +26,39 @@ class Connection extends \hiqdev\hiart\rest\Connection implements ConnectionInte
     }
 
     /**
+     * Fixes response.
+     * @param ResponseInterface $response
+     * @return bool if response was fixed
+     */
+    public function fixResponse(ResponseInterface $response)
+    {
+        if ($response->getRequest()->getQuery()->getOption('batch')) {
+            return false;
+        }
+
+        if ($response->getData() !== []) {
+            return false;
+        }
+
+        $class = new \ReflectionObject($response);
+        $prop = $class->getProperty('data');
+        $prop->setAccessible(true);
+        $prop->setValue($response, null);
+
+        return true;
+    }
+
+    /**
+     * Calls fixResponse.
      * @param ResponseInterface $response
      * @return string|false error text or false
      */
     public function getResponseError(ResponseInterface $response)
     {
+        if ($this->fixResponse($response)) {
+            return false;
+        }
+
         if (!$this->isError($response)) {
             return false;
         }
