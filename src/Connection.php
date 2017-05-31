@@ -26,26 +26,35 @@ class Connection extends \hiqdev\hiart\rest\Connection implements ConnectionInte
     }
 
     /**
-     * Fixes response.
+     * Fixes response:
+     * - if batch - don't touch
+     * - if single: [] => null, else get first item
      * @param ResponseInterface $response
-     * @return bool if response was fixed
+     * @return bool if response doesn't need to be checked for error
      */
-    public function fixResponse(ResponseInterface $response)
+    protected function fixResponse(ResponseInterface $response)
     {
         if ($response->getRequest()->getQuery()->getOption('batch')) {
             return false;
         }
 
-        if ($response->getData() !== []) {
-            return false;
-        }
+        $rows = $response->getData();
+        $empty = $rows === [];
+        $this->setResponseData($response, $empty ? null : reset($rows));
 
+        return $empty;
+    }
+
+    /**
+     * @param ResponseInterface $response
+     * @param array|null $data
+     */
+    protected function setResponseData(ResponseInterface $response, $data)
+    {
         $class = new \ReflectionObject($response);
         $prop = $class->getProperty('data');
         $prop->setAccessible(true);
-        $prop->setValue($response, null);
-
-        return true;
+        $prop->setValue($response, $data);
     }
 
     /**
