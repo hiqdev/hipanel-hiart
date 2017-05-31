@@ -10,6 +10,9 @@
 
 namespace hipanel\hiart;
 
+use hiqdev\hiart\AbstractResponse;
+use yii\helpers\Json;
+
 /**
  * Command for HiPanel API.
  */
@@ -17,12 +20,35 @@ class Command extends \hiqdev\hiart\Command
 {
     public function search($options = [])
     {
-        $rows = parent::search($options);
+        /** @var AbstractResponse $response */
+        $response = parent::search($options);
 
         if ($this->request->getQuery()->getOption('batch')) {
-            return $rows;
+            return $response;
         }
 
-        return $rows === [] ? null : reset($rows);
+        if ($response->getData() === []) {
+            return $this->fakeResponseWithData($response, '');
+        }
+
+        return $this->fakeResponseWithData($response, Json::encode(reset($response->getData())));
+    }
+
+    private function fakeResponseWithData(AbstractResponse $response, $data)
+    {
+        $newResponse = clone $response;
+        $newResponseReflection = new \ReflectionObject($newResponse);
+
+        $isDecodedProperty = $newResponseReflection->getProperty('isDecoded');
+        $isDecodedProperty->setAccessible(true);
+        $isDecodedProperty->setValue($newResponse, false);
+        $isDecodedProperty->setAccessible(false);
+
+        $rawDataProperty = $newResponseReflection->getProperty('rawData');
+        $rawDataProperty->setAccessible(true);
+        $rawDataProperty->setValue($newResponse, $data);
+        $rawDataProperty->setAccessible(false);
+
+        return $newResponse;
     }
 }
