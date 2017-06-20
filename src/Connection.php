@@ -64,22 +64,22 @@ class Connection extends \hiqdev\hiart\rest\Connection implements ConnectionInte
      */
     public function getResponseError(ResponseInterface $response)
     {
-        if ($this->fixResponse($response)) {
-            return false;
+        if ($this->isError($response)) {
+            $error = $this->getError($response);
+            if ($error === 'invalid_token') {
+                $this->app->user->logout();
+                $this->app->response->refresh()->send();
+                $this->app->end();
+            }
+
+            return $error ?: 'unknown api error';
         }
 
-        if (!$this->isError($response)) {
-            return false;
+        if ($response->getRequest()->getQuery()->action === 'search') {
+            $this->fixResponse($response);
         }
 
-        $error = $this->getError($response);
-        if ($error === 'invalid_token') {
-            $this->app->user->logout();
-            $this->app->response->refresh()->send();
-            $this->app->end();
-        }
-
-        return $error ?: 'unknown api error';
+        return false;
     }
 
     /**
