@@ -32,6 +32,7 @@ class QueryBuilder extends \hiqdev\hiart\rest\QueryBuilder
         } else {
             $from = is_array($query->from) ? reset($query->from) : $query->from;
         }
+        $from = Inflector::id2camel($from);
 
         return lcfirst($from . ($query->getOption('batch') ? 's' : '') . $this->buildCommand($query));
     }
