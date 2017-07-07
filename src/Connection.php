@@ -66,7 +66,7 @@ class Connection extends \hiqdev\hiart\rest\Connection implements ConnectionInte
     {
         if ($this->isError($response)) {
             $error = $this->getError($response);
-            if ($error === 'invalid_token') {
+            if (in_array($error, ['invalid_token', 'not_allowed_ip'], true)) {
                 $this->app->user->logout();
                 $this->app->response->refresh()->send();
                 $this->app->end();
