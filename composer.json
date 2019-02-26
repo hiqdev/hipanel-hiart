@@ -57,8 +57,8 @@
     },
     "extra": {
         "config-plugin": {
-            "params": "src/config/params.php",
-            "common": "src/config/common.php"
+            "params": "config/params.php",
+            "common": "config/common.php"
         }
     },
     "repositories": [
