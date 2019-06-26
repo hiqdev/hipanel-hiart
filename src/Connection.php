@@ -93,7 +93,7 @@ class Connection extends \hiqdev\hiart\rest\Connection implements ConnectionInte
         }
 
         $data = $response->getData();
-        if ($data === '0') {
+        if ($data === '0' || $data === 0) {
             return false;
         }
 
