@@ -27,9 +27,13 @@ class QueryBuilder extends \hiqdev\hiart\rest\QueryBuilder
 
     public function buildUri(Query $query)
     {
-        if (is_array($query->action)) {
-            $from = reset($query->action);
+        $action = $query->action;
+        if (is_array($action)) {
+            $from = reset($action);
         } else {
+            if (ctype_upper($action[0])) {
+                return $action;
+            }
             $from = is_array($query->from) ? reset($query->from) : $query->from;
         }
         $from = Inflector::id2camel($from);
