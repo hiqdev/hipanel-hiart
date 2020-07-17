@@ -31,7 +31,7 @@ class QueryBuilder extends \hiqdev\hiart\rest\QueryBuilder
         if (is_array($action)) {
             $from = reset($action);
         } else {
-            if (ctype_upper($action[0])) {
+            if (is_string($action) && ctype_upper($action)) {
                 return $action;
             }
             $from = is_array($query->from) ? reset($query->from) : $query->from;
