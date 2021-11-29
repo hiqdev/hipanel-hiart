@@ -11,5 +11,4 @@
 return [
     'hiart.class'   => \hipanel\hiart\Connection::class,
     'hiart.baseUri' => 'https://hiapi.hiqdev.com/',
-    'hiart.hiapi.class' => \hipanel\hiart\hiapi\Connection::class,
 ];

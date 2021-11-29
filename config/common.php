@@ -8,20 +8,19 @@
  * @copyright Copyright (c) 2017, HiQDev (http://hiqdev.com/)
  */
 
+use hipanel\hiart\hiapi\Connection;
+use hipanel\hiart\hiapi\HiapiConnectionInterface;
+
 return [
-    'components' => array_filter([
-        'hiapi' => array_filter([
-            'class'         => \hipanel\hiart\hiapi\Connection::class,
-            'requestClass'  => \hipanel\hiart\hiapi\AutoRequest::class,
-            'baseUri'       => $params['hiart.baseUri'],
-            'apiVersion'       => 'v1',
-        ]),
-    ]),
+    'components' => [
+        'hiapi' => [
+            'class' => Connection::class,
+            'baseUri' => $params['hiart.baseUri'],
+        ],
+    ],
     'container' => [
         'singletons' => [
-            \hiqdev\hiart\hiapi\HiapiConnectionInterface::class => function () {
-                return Yii::$app->get(Yii::$app->params['hiapi']);
-            },
+            HiapiConnectionInterface::class => static fn() => Yii::$app->get('hiapi'),
         ],
     ],
 ];
