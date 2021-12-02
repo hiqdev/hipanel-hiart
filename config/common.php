@@ -8,4 +8,19 @@
  * @copyright Copyright (c) 2017, HiQDev (http://hiqdev.com/)
  */
 
-return [];
+use hipanel\hiart\hiapi\Connection;
+use hipanel\hiart\hiapi\HiapiConnectionInterface;
+
+return [
+    'components' => [
+        'hiapi' => [
+            'class' => Connection::class,
+            'baseUri' => $params['hiart.baseUri'],
+        ],
+    ],
+    'container' => [
+        'singletons' => [
+            HiapiConnectionInterface::class => static fn() => Yii::$app->get('hiapi'),
+        ],
+    ],
+];

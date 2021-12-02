@@ -100,12 +100,12 @@ class Connection extends \hiqdev\hiart\rest\Connection implements ConnectionInte
         return is_array($data) ? array_key_exists('_error', $data) : !$data;
     }
 
-    private function isRawDataEmpty(ResponseInterface $response)
+    protected function isRawDataEmpty(ResponseInterface $response)
     {
         return $response->getRawData() === null || $response->getRawData() === '';
     }
 
-    private function getError(ResponseInterface $response)
+    protected function getError(ResponseInterface $response)
     {
         if ($this->isRawDataEmpty($response)) {
             return 'The response body is empty';
