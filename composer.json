@@ -43,7 +43,7 @@
         }
     ],
     "require": {
-        "hiqdev/yii2-hiart-guzzle": "*@dev"
+        "hiqdev/yii2-hiart-guzzle": "dev-php8"
     },
     "require-dev": {
         "phpunit/phpunit": "^5.7",
