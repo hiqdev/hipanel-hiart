@@ -49,7 +49,12 @@ class Request extends \hiqdev\hiart\guzzle\Request
     public function setAuth(): self
     {
         $auth = $this->builder->db->getAuth();
-        $this->headers['Authorization'] = 'Bearer ' . $auth['access_token'];
+        if (isset($auth['access_token'])) {
+            $this->headers['Authorization'] = 'Bearer ' . $auth['access_token'];
+        }
+        if (isset($auth['auth_ip'])) {
+            $this->headers['X-User-Ip'] = $auth['auth_ip'];
+        }
 
         return $this;
     }
