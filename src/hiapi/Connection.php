@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace hipanel\hiart\hiapi;
 
+use GuzzleHttp\Client;
+use GuzzleHttp\Pool;
 use hipanel\hiart\Connection as HiartConnection;
 use hiqdev\hiart\Command;
 use hiqdev\hiart\ConnectionInterface;
+use hiqdev\hiart\guzzle\Response;
 use hiqdev\hiart\Query;
 use Yii;
 use yii\base\Component;
@@ -15,11 +18,9 @@ use hiqdev\hiart\ResponseInterface;
 class Connection extends Component implements ConnectionInterface, HiapiConnectionInterface
 {
     public ?string $baseUri = null;
-
+    public ?string $name = null;
     public array $config = [];
-
     private ?Request $request = null;
-
     private HiartConnection $hiartConnection;
 
     public function __construct(HiartConnection $hiartConnection, $config = [])
@@ -27,6 +28,7 @@ class Connection extends Component implements ConnectionInterface, HiapiConnecti
         parent::__construct($config);
         $this->hiartConnection = $hiartConnection;
         $this->hiartConnection->baseUri = $this->baseUri;
+        $this->name = $this->hiartConnection->name;
     }
 
     public function getHandler()
@@ -71,7 +73,7 @@ class Connection extends Component implements ConnectionInterface, HiapiConnecti
 
     public function send($request, array $options = []): ResponseInterface
     {
-        $profile = serialize($this->getRequest());
+        $profile = serialize($request);
         $category = static::getProfileCategory();
         Yii::beginProfile($profile, $category);
         $response = $request->send($options);
@@ -79,6 +81,43 @@ class Connection extends Component implements ConnectionInterface, HiapiConnecti
         $this->checkResponse($response);
 
         return $response;
+    }
+
+    public function sendPool($requests, array $options = []): array
+    {
+        /** @var \hiqdev\hiart\guzzle\Request $request **/
+        $request = reset($requests);
+        $client = $request->getHandler();
+        $category = static::getProfileCategory();
+        $result = [];
+        $requestGenerator = function($requests) use ($client, $category) {
+            foreach($requests as $idx => $request) {
+                Yii::beginProfile(serialize($request), $category);
+                yield $idx => fn() => $client->sendAsync($request->getWorker());
+            }
+        };
+        $pool = new Pool($client, $requestGenerator($requests), [
+            'concurrency' => 5,
+            'fulfilled' => function ($response, $index) use ($requests, $category, &$result) {
+                $request = $requests[$index];
+                $response = new Response($request, $response);
+                Yii::endProfile(serialize($request), $category);
+                $this->checkResponse($response);
+                $data = $response->getData();
+                $result[] = $data;
+//                $result[] = $request->getQuery()->populate($data);
+            },
+            'rejected' => function ($reason, $index) {
+                $a = 1;
+                // this is delivered each failed request
+            },
+        ]);
+        // Initiate the transfers and create a promise
+        $promise = $pool->promise();
+        // Force the pool of requests to complete
+        $promise->wait();
+
+        return $result;
     }
 
     public static function getDb($dbname = null): self
