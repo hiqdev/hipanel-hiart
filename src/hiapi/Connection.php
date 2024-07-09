@@ -9,6 +9,7 @@ use hiqdev\hiart\Command;
 use hiqdev\hiart\ConnectionInterface;
 use hiqdev\hiart\guzzle\Response;
 use hiqdev\hiart\guzzle\Request;
+use hipanel\hiart\hiapi\Request as HiapiRequest;
 use hiqdev\hiart\Query;
 use Yii;
 use yii\base\Component;
@@ -89,7 +90,7 @@ class Connection extends Component implements ConnectionInterface, HiapiConnecti
     }
 
     /**
-     * @param Request[] $requests
+     * @param \hiqdev\hiart\guzzle\Request[] $requests
      * @return Response[]
      */
     public function sendPool(array $requests): array
@@ -133,7 +134,7 @@ class Connection extends Component implements ConnectionInterface, HiapiConnecti
     public function getRequest(): Request
     {
         if (!$this->request) {
-            $this->request = new Request(new QueryBuilder($this), new Query());
+            $this->request = new HiapiRequest(new QueryBuilder($this), new Query());
         }
 
         return $this->request;
