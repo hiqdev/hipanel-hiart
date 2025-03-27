@@ -70,7 +70,7 @@ class Connection extends \hiqdev\hiart\rest\Connection implements ConnectionInte
 
     private function isHttpError(ResponseInterface $response): bool
     {
-        return $response->getStatusCode() != 400;
+        return $response->getStatusCode() != 200;
     }
 
     /**
