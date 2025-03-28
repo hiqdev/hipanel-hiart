@@ -34,15 +34,43 @@ class Connection extends \hiqdev\hiart\rest\Connection implements ConnectionInte
      */
     protected function fixResponse(ResponseInterface $response)
     {
-        if ($response->getRequest()->getQuery()->getOption('batch')) {
+        if ($this->isBatchRequest($response)) {
             return false;
         }
 
-        $rows = $response->getData();
-        $empty = $rows === [];
-        $this->setResponseData($response, $empty ? null : reset($rows));
+        if ($this->isHttpError($response)) {
+            throw new HttpResponseException(sprintf(
+                "HTTP Error: %s - %s",
+                $response->getStatusCode(),
+                var_export($response->getData(), true),
+            ));
+        }
 
-        return $empty;
+        $rows = $response->getData();
+
+        if (!is_array($rows)) {
+            throw new InvalidApiResponseException("Invalid API response: " . var_export($rows, true));
+        }
+
+        if (empty($rows)) {
+            $this->setResponseData($response, null);
+
+            return true;
+        }
+
+        $this->setResponseData($response, reset($rows));
+
+        return false;
+    }
+
+    private function isBatchRequest(ResponseInterface $response): bool
+    {
+        return $response->getRequest()->getQuery()->getOption('batch');
+    }
+
+    private function isHttpError(ResponseInterface $response): bool
+    {
+        return $response->getStatusCode() != 200;
     }
 
     /**
