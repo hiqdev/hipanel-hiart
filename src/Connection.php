@@ -65,7 +65,7 @@ class Connection extends \hiqdev\hiart\rest\Connection implements ConnectionInte
 
     private function isBatchRequest(ResponseInterface $response): bool
     {
-        return $response->getRequest()->getQuery()->getOption('batch');
+        return $response->getRequest()->getQuery()->getOption('batch') ?? false;
     }
 
     private function isHttpError(ResponseInterface $response): bool
