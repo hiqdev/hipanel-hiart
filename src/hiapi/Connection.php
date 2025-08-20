@@ -171,4 +171,9 @@ class Connection extends Component implements ConnectionInterface, HiapiConnecti
     {
         return $this->hiartConnection->getUserAgent();
     }
+
+    public function getTraceparentHeader(): string
+    {
+        return $this->hiartConnection->getTraceparentHeader();
+    }
 }
