@@ -26,6 +26,7 @@ class Connection extends Component implements ConnectionInterface, HiapiConnecti
     public ?string $baseUri = null;
     public ?string $name = null;
     public array $config = [];
+    /** @var HiapiRequest|null */
     private ?Request $request = null;
     private HiartConnection $hiartConnection;
 
@@ -131,6 +132,9 @@ class Connection extends Component implements ConnectionInterface, HiapiConnecti
         return Yii::$app->get('hiapi');
     }
 
+    /**
+     * @return HiapiRequest
+     */
     public function getRequest(): Request
     {
         if (!$this->request) {

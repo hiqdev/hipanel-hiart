@@ -26,6 +26,7 @@ class Request extends \hiqdev\hiart\guzzle\Request
 
     public function setMethod(string $method): self
     {
+        /** @psalm-suppress InvalidPropertyAssignmentValue AbstractRequest::$method is documented as array, but holds the HTTP method string */
         $this->method = strtoupper($method);
 
         return $this;

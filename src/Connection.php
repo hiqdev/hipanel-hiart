@@ -65,6 +65,11 @@ class Connection extends \hiqdev\hiart\rest\Connection implements ConnectionInte
         return false;
     }
 
+    /**
+     * getQuery() is implemented by every hiart request (AbstractRequest)
+     * but is not declared on RequestInterface.
+     * @psalm-suppress UndefinedInterfaceMethod
+     */
     private function isBatchRequest(ResponseInterface $response): bool
     {
         return $response->getRequest()->getQuery()->getOption('batch') ?? false;
@@ -83,7 +88,6 @@ class Connection extends \hiqdev\hiart\rest\Connection implements ConnectionInte
     {
         $class = new \ReflectionObject($response);
         $prop = $class->getProperty('data');
-        $prop->setAccessible(true);
         $prop->setValue($response, $data);
     }
 
@@ -107,6 +111,7 @@ class Connection extends \hiqdev\hiart\rest\Connection implements ConnectionInte
             return $error ?: 'unknown api error';
         }
 
+        /** @psalm-suppress UndefinedInterfaceMethod same as in isBatchRequest() */
         if ($response->getRequest()->getQuery()->action === 'search') {
             $this->fixResponse($response);
         }
