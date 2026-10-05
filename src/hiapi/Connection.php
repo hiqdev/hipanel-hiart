@@ -11,6 +11,7 @@ use hiqdev\hiart\guzzle\Response;
 use hiqdev\hiart\guzzle\Request;
 use hipanel\hiart\hiapi\Request as HiapiRequest;
 use hiqdev\hiart\Query;
+use InvalidArgumentException;
 use Yii;
 use yii\base\Component;
 use hiqdev\hiart\ResponseInterface;
@@ -42,39 +43,49 @@ class Connection extends Component implements ConnectionInterface, HiapiConnecti
         return null;
     }
 
-    public function get(string $path, array $params = []): ResponseInterface
+    public function get(string $path, array $params = [], array $options = []): ResponseInterface
     {
         $request = $this->getRequest()->fill('GET', $path, $params);
 
-        return $this->send($request);
+        return $this->send($request, $options);
     }
 
-    public function head(string $path, array $params = []): ResponseInterface
+    public function head(string $path, array $params = [], array $options = []): ResponseInterface
     {
         $request = $this->getRequest()->fill('HEAD', $path, $params);
 
-        return $this->send($request);
+        return $this->send($request, $options);
     }
 
-    public function post(string $path, array $params = [], array $body = []): ResponseInterface
+    public function post(string $path, array $params = [], array $body = [], array $options = []): ResponseInterface
     {
+        $this->validateBodyOptions($body, $options);
         $request = $this->getRequest()->fill('POST', $path, $params, $body);
 
-        return $this->send($request);
+        return $this->send($request, $options);
     }
 
-    public function put(string $path, array $params = [], array $body = []): ResponseInterface
+    public function put(string $path, array $params = [], array $body = [], array $options = []): ResponseInterface
     {
+        $this->validateBodyOptions($body, $options);
         $request = $this->getRequest()->fill('PUT', $path, $params, $body);
 
-        return $this->send($request);
+        return $this->send($request, $options);
     }
 
-    public function delete(string $path, array $params = [], array $body = []): ResponseInterface
+    public function delete(string $path, array $params = [], array $body = [], array $options = []): ResponseInterface
     {
+        $this->validateBodyOptions($body, $options);
         $request = $this->getRequest()->fill('DELETE', $path, $params, $body);
 
-        return $this->send($request);
+        return $this->send($request, $options);
+    }
+
+    private function validateBodyOptions(array $body, array $options): void
+    {
+        if ($body !== [] && array_intersect_key($options, array_flip(['json', 'body', 'form_params', 'multipart'])) !== []) {
+            throw new InvalidArgumentException('Pass a form body or a body option, not both.');
+        }
     }
 
     public function send($request, array $options = []): ResponseInterface
