@@ -101,6 +101,7 @@ class Connection extends Component implements ConnectionInterface, HiapiConnecti
         $client = $request->getHandler();
         $profileCategory = static::getProfileCategory();
         $responses = [];
+        $failures = [];
         $requestGenerator = function ($requests) use ($client, $profileCategory) {
             foreach ($requests as $idx => $request) {
                 Yii::beginProfile(serialize($request), $profileCategory);
@@ -116,13 +117,20 @@ class Connection extends Component implements ConnectionInterface, HiapiConnecti
                 $this->checkResponse($response);
                 $responses[] = $response;
             },
-            'rejected' => function ($reason) {
+            'rejected' => function ($reason) use (&$failures) {
                 // this is delivered each failed request
                 Yii::getLogger()->log($reason, \yii\log\Logger::LEVEL_ERROR);
+                $failures[] = $reason;
             },
         ]);
         $promise = $pool->promise(); // Initiate the transfers and create a promise
         $promise->wait(); // Force the pool of requests to complete
+
+        // A swallowed failure would silently drop that request's rows from the result.
+        if ($failures !== []) {
+            $first = reset($failures);
+            throw $first instanceof \Throwable ? $first : new \RuntimeException((string) $first);
+        }
 
         return $responses;
     }
