@@ -9,6 +9,11 @@ class Request extends \hiqdev\hiart\guzzle\Request
     public function fill(string $method, string $path, array $queryParams = [], array $body = []): self
     {
         $this->isBuilt = null;
+        $this->worker = null;
+        $this->fullUri = null;
+        $this->parts = [];
+        $this->headers = [];
+        $this->body = null;
         $this->setDbname('hiapi')
             ->setMethod($method)
             ->setUri($path)
