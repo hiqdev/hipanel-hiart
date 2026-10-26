@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<psalm
+    errorLevel="5"
+    phpVersion="8.4"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="https://getpsalm.org/schema/config vendor/vimeo/psalm/config.xsd"
+    xmlns="https://getpsalm.org/schema/config"
+    strictBinaryOperands="true"
+    allowStringToStandInForClass="true"
+    usePhpDocPropertiesWithoutMagicCall="true"
+    usePhpDocMethodsWithoutMagicCall="true"
+    ignoreInternalFunctionNullReturn="false"
+    findUnusedVariablesAndParams="true"
+    findUnusedPsalmSuppress="true"
+    ensureArrayStringOffsetsExist="true"
+    ensureArrayIntOffsetsExist="true"
+    ignoreInternalFunctionFalseReturn="false"
+>
+    <projectFiles>
+        <directory name="src"/>
+        <ignoreFiles>
+            <directory name="vendor"/>
+        </ignoreFiles>
+    </projectFiles>
+    <stubs>
+        <!-- The global Yii class is not autoloadable; applications require this file at bootstrap. -->
+        <file name="vendor/yiisoft/yii2/Yii.php"/>
+    </stubs>
+    <issueHandlers>
+        <!--
+          ensureArray*OffsetsExist reports these as "info" by default, even at
+          errorLevel 5 (they inherit the level of the parent
+          PossiblyUndefinedArrayOffset issue type). Force them to errors so
+          undefined-array-key bugs actually fail the build.
+        -->
+        <PossiblyUndefinedStringArrayOffset errorLevel="error" />
+        <PossiblyUndefinedIntArrayOffset errorLevel="error" />
+        <PossiblyUndefinedArrayOffset errorLevel="error" />
+
+        <!--
+          This is a library: the connections, query builder, request and
+          event classes are instantiated by the DI container / application
+          config (config/common.php, consuming applications) and their public
+          methods and properties (get()/post()/sendPool(), $name, $config,
+          ErrorResponseEvent::$response, ...) are called by consuming code.
+          Psalm's unused-code detection only sees usages inside src/, so every
+          finding of these types is public API.
+        -->
+        <UnusedClass errorLevel="suppress" />
+        <PossiblyUnusedMethod errorLevel="suppress" />
+        <PossiblyUnusedProperty errorLevel="suppress" />
+        <PossiblyUnusedReturnValue errorLevel="suppress" />
+
+        <!--
+          The package declares no minimum PHP version and does not use the
+          PHP 8.3 #[Override] attribute anywhere; this is a style check, not a bug.
+        -->
+        <MissingOverrideAttribute errorLevel="suppress" />
+    </issueHandlers>
+</psalm>

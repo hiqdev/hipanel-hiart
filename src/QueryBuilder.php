@@ -27,6 +27,7 @@ class QueryBuilder extends \hiqdev\hiart\rest\QueryBuilder
 
     public function buildUri(Query $query)
     {
+        /** @var string|array $action Query::$action is documented as string, but the [table, action] array form is handled too */
         $action = $query->action;
         if (is_array($action)) {
             $from = reset($action);
@@ -43,6 +44,7 @@ class QueryBuilder extends \hiqdev\hiart\rest\QueryBuilder
 
     public function buildCommand(Query $query)
     {
+        /** @var string|array $action see buildUri() */
         $action = $query->action;
         if (is_array($action)) {
             $action = end($action);
@@ -78,6 +80,10 @@ class QueryBuilder extends \hiqdev\hiart\rest\QueryBuilder
     public function prepare(Query $query)
     {
         $parts = [];
+        /**
+         * yii\db\Query::prepare() documents a yii\db\QueryBuilder argument, but only returns $this.
+         * @psalm-suppress InvalidArgument
+         */
         $query->prepare($this);
 
         $this->buildSelect($query->select, $parts);
