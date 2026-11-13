@@ -4,9 +4,6 @@
 
 [![Latest Stable Version](https://poser.pugx.org/hiqdev/hipanel-hiart/v/stable)](https://packagist.org/packages/hiqdev/hipanel-hiart)
 [![Total Downloads](https://poser.pugx.org/hiqdev/hipanel-hiart/downloads)](https://packagist.org/packages/hiqdev/hipanel-hiart)
-[![Build Status](https://img.shields.io/travis/hiqdev/hipanel-hiart.svg)](https://travis-ci.org/hiqdev/hipanel-hiart)
-[![Scrutinizer Code Coverage](https://img.shields.io/scrutinizer/coverage/g/hiqdev/hipanel-hiart.svg)](https://scrutinizer-ci.com/g/hiqdev/hipanel-hiart/)
-[![Scrutinizer Code Quality](https://img.shields.io/scrutinizer/g/hiqdev/hipanel-hiart.svg)](https://scrutinizer-ci.com/g/hiqdev/hipanel-hiart/)
 [![Dependency Status](https://www.versioneye.com/php/hiqdev:hipanel-hiart/dev-master/badge.svg)](https://www.versioneye.com/php/hiqdev:hipanel-hiart/dev-master)
 
 ## Installation

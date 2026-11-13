@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        php: [ '8.4' ]
+        php: [ '8.5' ]
     name: PHP ${{ matrix.php }}
     steps:
       - name: Checkout
@@ -23,16 +23,8 @@ jobs:
           php-version: ${{ matrix.php }}
           tools: composer:v2
 
-      - name: Cache Composer packages
-        id: composer-cache
-        uses: actions/cache@v4
-        with:
-          path: vendor
-          key: ${{ matrix.php }}-composer-${{ hashFiles('composer.json') }}
-
       - name: Composer install
-        if: steps.composer-cache.outputs.cache-hit != 'true'
-        run: composer install -n
+        run: composer install -n --prefer-dist --no-progress
 
       - name: Run Psalm
         run: vendor/bin/psalm
